@@ -1,12 +1,10 @@
 import React from 'react'
-import { Outlet } from 'react-router-dom'
-import { Header, Footer } from '../Molecules'
+
+import { Header, Footer } from '../Organisms/User'
 import styled from 'styled-components'
+import { Outlet } from 'react-router-dom'
 
-// import Header from '../Molecules/Header/Header'
-// import Footer from '../Molecules/Footer/Footer'
-
-const MainLayout = () => {
+const UserMainLayout = () => {
   return (
     <Container className='MainLayout'>
       <Header />
@@ -15,10 +13,17 @@ const MainLayout = () => {
       </main>
       <Footer />
     </Container>
+      //   <Container className='MainLayout'>MainLayout
+      //   <Header />
+      //   <main className="main-content">
+      //     <Outlet />
+      //   </main>
+      //   <Footer />
+      // </Container>
   )
 }
 
-export default MainLayout
+export default UserMainLayout
 
 //styled không hỗ trợ extend hay mixin
 const Container = styled.div`
@@ -27,7 +32,6 @@ const Container = styled.div`
   display:flex;
   flex-direction:column;
   justify-content:space-between;
-
   .Header{
 
   }
@@ -40,4 +44,4 @@ const Container = styled.div`
 
   }
 }
-// `
+`
