@@ -3,6 +3,7 @@ import React from 'react'
 import { Header, Footer } from '../Organisms/User'
 import styled from 'styled-components'
 import { Outlet } from 'react-router-dom'
+import Login from '../../pages/Admin/Login/Login'
 
 const UserMainLayout = () => {
   return (
@@ -13,13 +14,6 @@ const UserMainLayout = () => {
       </main>
       <Footer />
     </Container>
-      //   <Container className='MainLayout'>MainLayout
-      //   <Header />
-      //   <main className="main-content">
-      //     <Outlet />
-      //   </main>
-      //   <Footer />
-      // </Container>
   )
 }
 
