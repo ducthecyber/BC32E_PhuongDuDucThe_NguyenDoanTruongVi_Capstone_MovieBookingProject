@@ -4,6 +4,7 @@ import UserMainLayout from '../components/layouts/UserMainLayout'
 import AdminMainLayout from '../components/layouts/AdminMainLayout'
 import Home from '../pages/Home/Home'
 import Login from '../pages/Admin/Login/Login'
+import SignUp from '../pages/Admin/SignUp/SignUp'
 import FilmManage from '../pages/Admin/FilmManage/FilmManage'
 import UserManage from '../pages/Admin/UserManage/UserManage'
 
@@ -27,6 +28,10 @@ const Routers = () => {
         {
           path: 'login',
           element:<Login/>,
+        },
+        {
+          path: 'signup',
+          element:<SignUp/>,
         },
         {
           path: 'film',

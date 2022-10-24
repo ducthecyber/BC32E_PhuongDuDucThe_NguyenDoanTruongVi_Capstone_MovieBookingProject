@@ -8,9 +8,7 @@ const AdminMainLayout = () => {
   return (
     <Container className='MainLayout'>
       <Header/>
-      <main>
-        <Outlet/>
-      </main>
+     
       <Footer/>
     </Container>
   )
@@ -21,7 +19,8 @@ export default AdminMainLayout
 //styled không hỗ trợ extend hay mixin
 const Container = styled.div`
 &.MainLayout{
-  min-height:100vh;
+  /* min-height:100vh; */
+  height:100%;
   display:flex;
   flex-direction:column;
   justify-content:space-between;
