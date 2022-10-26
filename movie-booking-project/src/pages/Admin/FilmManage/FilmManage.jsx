@@ -1,4 +1,5 @@
-import React from 'react'
+import React, { Fragment, useEffect } from 'react'
+import {useDispatch,useSelector} from 'react-redux'
 import { Button, Space, Table, Tag, Input } from "antd";
 import {
     DeleteOutlined,
@@ -7,6 +8,9 @@ import {
 } from "@ant-design/icons";
 import styled from 'styled-components';
 import { AudioOutlined } from '@ant-design/icons';
+import { movieActions } from '../../../store/actions/movieAction';
+import {movieReducer} from '../../../store/reducers/movieReducer'
+
 const { Search } = Input;
 const onSearch = (value) => console.log(value);
 
@@ -16,6 +20,7 @@ const columns = [
         dataIndex: "maPhim",
         key: "maPhim",
         width: 80,
+        // value:(text,object)=>{return<span>{text}</span>}
         // render: (text) => <a>{text}</a>,
     },
     {
@@ -38,7 +43,10 @@ const columns = [
         dataIndex: "hinhAnh",
         key: "hinhAnh",
         width: 200,
-
+        render:(text,film)=>{return<Fragment>
+            <img src={film.hinhAnh} alt={film.tenPhim} width={100} height={100} 
+            onError={(e)=>{e.target.onError=null;e.target.src=`https://picsum.photo/id/${film.maPhim}/50/50`}} />
+        </Fragment>}
         // render: (text) => <a>{text}</a>,
     },
     {
@@ -94,34 +102,19 @@ const columns = [
     },
 ];
 
-const data = [
-    {
-        key: '1',
-        name: 'John Brown',
-        age: 32,
-        address: 'New York No. 1 Lake Park',
-        tags: ['nice', 'developer'],
-    },
-    {
-        key: '2',
-        name: 'Jim Green',
-        age: 42,
-        address: 'London No. 1 Lake Park',
-        tags: ['loser'],
-    },
-    {
-        key: '3',
-        name: 'Joe Black',
-        age: 32,
-        address: 'Sidney No. 1 Lake Park',
-        tags: ['cool', 'teacher'],
-    },
-];
+
 
 const FilmManage = () => {
+    const dispatch = useDispatch()
+    const {movieList} = useSelector((state)=>state.movieReducer)
+    const data = movieList
+    console.log('movieList',movieList)
+    useEffect(()=>{
+        dispatch(movieActions.getMovieList())
+    },[])
     return (
-        <Container className='FilmManage mr-2 ml-2'>
-            <div class="flex justify-between mb-2">
+        <Container className='FilmManage mr-2 ml-2 h-full'>
+            <div className="flex justify-between mb-2">
                 <span className='text-2xl semi-bold'>Quản Lý Phim</span>
                 <button className="py-2 px-3 bg-blue-500 text-neutral-100 rounded-md hover:bg-blue-700 transition duration-200 text-base">+ Thêm Phim</button>
             </div>
@@ -130,7 +123,10 @@ const FilmManage = () => {
                 onSearch={onSearch}
                 className='mb-5 Search'
             />
+            <div className='h-screen'>
+
             <Table columns={columns} dataSource={data} />
+            </div>
         </Container>
     )
 }
@@ -140,24 +136,30 @@ export default FilmManage
 const Container = styled.div`
 &.FilmManage{
     button{
-    &:hover{
-        color:white;
-    } 
     }
     button.delete{
     background-color:tomato;
     border:none;
     color:gray;
+    &:hover{
+        color:white
+    }
     }
     button.edit{
     background-color:deepskyblue;
     border:none;
     color:gray;
+    &:hover{
+        color:white
+    }
     }
     button.create{
     background-color:springgreen;
     border:none;
     color:gray;
+    &:hover{
+        color:white
+    }
     }
     .Search{
     height:3rem;
