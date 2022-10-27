@@ -26,7 +26,7 @@ const columns = [
     title: "Tài khoản",
     dataIndex: "taiKhoan",
     key: "taiKhoan",
-    width: 100,
+    width: 70,
 
     // render: (text) => <a>{text}</a>,
   },
@@ -34,14 +34,14 @@ const columns = [
     title: "Email",
     dataIndex: "email",
     key: "email",
-    width: 200,
+    width: 100,
     // render: (text) => <a>{text}</a>,
   },
   {
     title: "Mật khẩu",
     dataIndex: "matKhau",
     key: "matKhau",
-    width: 200,
+    width: 150,
 
     // render: (text) => <a>{text}</a>,
   },
@@ -49,7 +49,7 @@ const columns = [
     title: "Số Điện Thoại",
     dataIndex: "soDt",
     key: "soDt",
-    width: 150,
+    width: 100,
 
     // render: (text) => <a>{text}</a>,
   },
@@ -57,7 +57,7 @@ const columns = [
     title: "Loại Người Dùng",
     dataIndex: "maLoaiNguoiDung",
     key: "maLoaiNguoiDung",
-    width: 300,
+    width: 100,
     render: (text) => {
       return (
         <span>
@@ -111,7 +111,7 @@ const UserManage = () => {
     dispatch(userAction.getUserList())
   }, [])
   return (
-    <Container className='FilmManage mr-2 ml-2'>
+    <Container className='UserManage mr-2 ml-2 pt-2'>
       <div className="flex justify-between mb-2">
         <span className='text-2xl semi-bold'>Quản Lý Người Dùng</span>
         <button className="py-2 px-3 bg-blue-500 text-neutral-100 rounded-md hover:bg-blue-700 transition duration-200 text-base">+ Thêm Người Dùng</button>
@@ -121,7 +121,7 @@ const UserManage = () => {
         onSearch={onSearch}
         className='mb-5 Search'
       />
-      <div className='h-screen'>
+      <div className=''>
       <Table columns={columns} dataSource={data} />
       </div>
     </Container>
@@ -131,7 +131,7 @@ const UserManage = () => {
 export default UserManage
 
 const Container = styled.div`
-&.FilmManage{
+&.UserManage{
     button{
     }
     button.delete{

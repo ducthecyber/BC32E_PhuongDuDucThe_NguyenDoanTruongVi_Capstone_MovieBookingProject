@@ -32,7 +32,7 @@ const Header = () => {
                     </NavLink>
                 </div>
                 <div className="w-5/6 flex items-center justify-center">
-                    <main className=''>
+                    <main className='h-full w-full'>
                         <Outlet />
                     </main>
                 </div>

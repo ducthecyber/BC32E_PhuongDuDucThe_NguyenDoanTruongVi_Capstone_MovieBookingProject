@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect } from 'react'
+import React, { Fragment, useEffect, useState } from 'react'
 import {useDispatch,useSelector} from 'react-redux'
 import { Button, Space, Table, Tag, Input } from "antd";
 import {
@@ -10,6 +10,7 @@ import styled from 'styled-components';
 import { AudioOutlined } from '@ant-design/icons';
 import { movieActions } from '../../../store/actions/movieAction';
 import {movieReducer} from '../../../store/reducers/movieReducer'
+import AddFilm from '../AddFilm/AddFilm';
 
 const { Search } = Input;
 const onSearch = (value) => console.log(value);
@@ -105,28 +106,38 @@ const columns = [
 
 
 const FilmManage = () => {
+    const [isOpenModal, setIsOpenModal] = useState(false);
+
     const dispatch = useDispatch()
     const {movieList} = useSelector((state)=>state.movieReducer)
     const data = movieList
     console.log('movieList',movieList)
+
     useEffect(()=>{
         dispatch(movieActions.getMovieList())
     },[])
     return (
-        <Container className='FilmManage mr-2 ml-2 h-full'>
+        <Container className='FilmManage mr-2 ml-2 pt-2'>
             <div className="flex justify-between mb-2">
                 <span className='text-2xl semi-bold'>Quản Lý Phim</span>
-                <button className="py-2 px-3 bg-blue-500 text-neutral-100 rounded-md hover:bg-blue-700 transition duration-200 text-base">+ Thêm Phim</button>
+                <button className="py-2 px-3 bg-blue-500 text-neutral-100 rounded-md hover:bg-blue-700 transition duration-200 text-base" onClick={()=>{setIsOpenModal(true);}}>+ Thêm Phim</button>
             </div>
             <Search
                 placeholder="Ten phim ban muon xem la gi? "
                 onSearch={onSearch}
                 className='mb-5 Search'
             />
-            <div className='h-screen'>
+            <div className=''>
 
             <Table columns={columns} dataSource={data} />
             </div>
+            {isOpenModal && (
+        <AddFilm
+        //   fetchFilmList={fetchFilmList}
+          isOpenModal={isOpenModal}
+          setIsOpenModal={setIsOpenModal}
+        />
+      )}
         </Container>
     )
 }
