@@ -1,14 +1,14 @@
 import { Button, DatePicker, Modal, Select, Switch, Upload } from "antd";
 import React, { useEffect, useState } from "react";
 import { Form, Input, InputNumber, message } from "antd";
-// import { UploadOutlined } from "@ant-design/icons";
+import { UploadOutlined } from "@ant-design/icons";
 import { LockOutlined } from "@ant-design/icons";
 // import { getUserServ } from "../../../Services/userServices";
 import { useDispatch, useSelector } from "react-redux";
-import { useFormik } from 'formik'
 // import { movieService } from "../../Services/movieService";
 import moment from "moment";
 import { movieActions } from "../../../store/actions/movieAction";
+import { useFormik } from "formik";
 const { TextArea } = Input;
 
 const { Option } = Select;
@@ -27,10 +27,23 @@ const validateMessages = {
     required: "Bắt buộc",
 };
 
-const AddFilm = ({ isOpenModal, setIsOpenModal, fetchFilmList }) => {
+const EditFilm = ({
+    isOpenModalEdit,
+    setIsOpenModalEdit,
+    filmInfo
+}) => {
     const dispatch = useDispatch();
-    const [imgSrc, setImgSrc] = useState('');
+    console.log('thongtinphim',filmInfo)
+    useEffect(() => {
+        dispatch(movieActions.editMovieInfo(filmInfo.maPhim))
+    }, [])
+    const {movieInfo} = useSelector(state=>state.movieReducer)
+    console.log('movieInfo',movieInfo)
+
+
+
     const formik = useFormik({
+        enableReinitialize:true,
         initialValues: {
             tenPhim: '',
             trailer: '',
@@ -60,48 +73,10 @@ const AddFilm = ({ isOpenModal, setIsOpenModal, fetchFilmList }) => {
             //Gọi api gửi các giá trị từ formData về backend xử lý
             dispatch(movieActions.addMovieList(formData))
             //đóng modal khi thêm nhấn nút thêm phim
-            setIsOpenModal(false)
+            // setIsOpenModal(false)
         }
     })
-    //function truyen gia tri ngay khoi chieu vào formik
-    const handleChangeDatePicker = (value) => {
-        // console.log('datepicker',moment(value).format('DD/MM/YYYY'))
-        let ngayKhoiChieu = moment(value).format('DD/MM/YYYY')
-        formik.setFieldValue('ngayKhoiChieu', ngayKhoiChieu)
-    }
 
-    //closure function cho các switch button
-    const handleChangeSwitch = (name) => {
-        return (value) => {
-            formik.setFieldValue(name, value)
-        }
-    }
-
-    const handleChangeInputNumber = (name) => {
-        return (value) => {
-            formik.setFieldValue(name, value)
-        }
-    }
-
-    const handleChangeFile = (e) => {
-        //lấy file ra từ e
-        let file = e.target.files[0]
-        if (file.type === 'image/jpg' || file.type === 'image/jpeg' || file.type === 'image/png') {
-            //tạo đối tượng để đọc file
-            let reader = new FileReader();
-            //trả ra url
-            reader.readAsDataURL(file);
-            //onload bắt lấy url
-            reader.onload = (e) => {
-                console.log(e.target.result)
-                //hình type base64
-                setImgSrc(e.target.result)
-            }
-            //đem dữ liệu lưu vào formik
-            formik.setFieldValue('hinhAnh', file);
-            console.log('files', file)
-        }
-    }
 
     const normFile = (e) => {
         if (Array.isArray(e)) {
@@ -110,27 +85,43 @@ const AddFilm = ({ isOpenModal, setIsOpenModal, fetchFilmList }) => {
 
         return e?.fileList;
     };
+      let startDate = moment(
+        moment(movieInfo.ngayKhoiChieu).format("DD/MM/YYYY"),
+        "DD/MM/YYYY"
+      );
+
     return (
         <>
             <Modal
-                title="Thêm phim mới"
+                title="Cập nhật phim"
                 footer={null}
                 centered
-                visible={isOpenModal}
+                open={isOpenModalEdit}
                 onCancel={() => {
-                    setIsOpenModal(false);
+                    setIsOpenModalEdit(false);
                 }}
                 width={1000}
             >
                 <div>
                     <Form
-                        onSubmitCapture={formik.handleSubmit}
                         {...layout}
-                        initialValues={{ danhGia: 5 }}
                         name="nest-messages"
+                        initialValues={{
+                              tenPhim: movieInfo.tenPhim,
+                              moTa: movieInfo.moTa,
+
+                              sapChieu: movieInfo.sapChieu,
+                              dangChieu: movieInfo.dangChieu,
+                              hot: movieInfo.hot,
+                              ngayKhoiChieu: startDate,
+                              danhGia: movieInfo.danhGia,
+                              maNhom: movieInfo.maNhom,
+                              trailer: movieInfo.trailer,
+                              hinhAnh:null,
+                        }}
                         onFinish={(values) => {
-                            console.log(values.sapChieu);
-                            let startDate = moment(values.ngayKhoiChieu._d).format(
+                            console.log(values);
+                            let ngayKhoiChieu = moment(values.ngayKhoiChieu._d).format(
                                 "DD/MM/YYYY"
                             );
 
@@ -143,7 +134,7 @@ const AddFilm = ({ isOpenModal, setIsOpenModal, fetchFilmList }) => {
 
                             formData.append("tenPhim", values.tenPhim);
                             formData.append("moTa", values.moTa);
-                            formData.append("ngayKhoiChieu", startDate);
+                            formData.append("ngayKhoiChieu", ngayKhoiChieu);
                             formData.append("sapChieu", values.sapChieu);
                             formData.append("dangChieu", values.dangChieu);
                             formData.append("hot", values.hot);
@@ -157,11 +148,11 @@ const AddFilm = ({ isOpenModal, setIsOpenModal, fetchFilmList }) => {
                             );
 
                             //   movieService
-                            //     .postNewMovie(formData)
+                            //     .editMovie(formData)
                             //     .then((res) => {
                             //       message.success(res.data.content);
-                            //       setIsOpenModal(false);
-                            //       fetchFilmList();
+                            //       // setIsOpenModalEdit(false);
+                            //       // fetchFilmList();
                             //     })
                             //     .catch((err) => {
                             //       message.error(err.response.data.content);
@@ -179,7 +170,7 @@ const AddFilm = ({ isOpenModal, setIsOpenModal, fetchFilmList }) => {
                                 },
                             ]}
                         >
-                            <Input name='tenPhim' onChange={formik.handleChange} />
+                            <Input name='tenPhim' value='tenphim'/>
                         </Form.Item>
                         <Form.Item
                             name={["trailer"]}
@@ -190,7 +181,7 @@ const AddFilm = ({ isOpenModal, setIsOpenModal, fetchFilmList }) => {
                                 },
                             ]}
                         >
-                            <Input name='trailer' onChange={formik.handleChange} />
+                            <Input />
                         </Form.Item>
                         <Form.Item
                             name={["moTa"]}
@@ -201,7 +192,7 @@ const AddFilm = ({ isOpenModal, setIsOpenModal, fetchFilmList }) => {
                                 },
                             ]}
                         >
-                            <TextArea rows={4} name='moTa' onChange={formik.handleChange} />
+                            <TextArea rows={4} />
                         </Form.Item>
                         <Form.Item
                             name={["ngayKhoiChieu"]}
@@ -216,7 +207,6 @@ const AddFilm = ({ isOpenModal, setIsOpenModal, fetchFilmList }) => {
                                 placeholder="Chọn ngày khởi chiếu"
                                 className="w-72"
                                 format={"DD/MM/YYYY"}
-                                onChange={handleChangeDatePicker}
                             />
                         </Form.Item>
                         <Form.Item
@@ -224,17 +214,17 @@ const AddFilm = ({ isOpenModal, setIsOpenModal, fetchFilmList }) => {
                             valuePropName="checked"
                             name="sapChieu"
                         >
-                            <Switch name='sapChieu' onChange={handleChangeSwitch('sapChieu')} />
+                            <Switch />
                         </Form.Item>
                         <Form.Item
                             label="Đang chiếu"
                             valuePropName="checked"
                             name="dangChieu"
                         >
-                            <Switch name='dangChieu' onChange={handleChangeSwitch('dangChieu')} />
+                            <Switch />
                         </Form.Item>
                         <Form.Item label="18+" valuePropName="checked" name="hot">
-                            <Switch name='hot' onChange={handleChangeSwitch('hot')} />
+                            <Switch />
                         </Form.Item>
                         <Form.Item
                             name={["danhGia"]}
@@ -245,31 +235,39 @@ const AddFilm = ({ isOpenModal, setIsOpenModal, fetchFilmList }) => {
                                 },
                             ]}
                         >
-                            {/* onChange không lấy được thuộc tính name của inputnumber */}
-                            <InputNumber onChange={handleChangeInputNumber('danhGia')} min={1} max={10} />
+                            <InputNumber min={1} max={10} />
                         </Form.Item>
                         <Form.Item
                             name="hinhAnh"
                             label="Chọn ảnh bìa"
                             valuePropName="fileList"
                             getValueFromEvent={normFile}
-                            rules={[
-                                {
-                                    required: true,
-                                },
-                            ]}
+                        // rules={[
+                        //   {
+                        //     required: true,
+                        //   },
+                        // ]}
                         >
-                            <input type='file' onChange={handleChangeFile}></input>
-                            <br />
-                            <img src={imgSrc} alt="..." style={{ width: 150, height: 150 }} accept="image/png, image/jpeg, image/jpg" />
-                            {/* <Upload name="logo" listType="picture">
+                            <Upload
+                                name="logo"
+                                listType="picture"
+                                defaultFileList={[
+                                    {
+                                        // uid: "1",
+                                        // name: "xxx.png",
+                                        // status: "done",
+                                        // url: filmInfor.hinhAnh,
+                                        // thumbUrl: filmInfor.hinhAnh,
+                                    },
+                                ]}
+                            >
                                 <Button icon={<UploadOutlined />}>Chọn ảnh</Button>
-                            </Upload> */}
+                            </Upload>
                         </Form.Item>
 
                         <div className="text-center mb-8">
-                            <button type="submit" className="py-1 px-4 bg-blue-700 md:text-base rounded-md text-white">
-                                Thêm mới
+                            <button className="py-1 px-4 bg-blue-700 md:text-base rounded-md text-white">
+                                Cập nhật
                             </button>
                         </div>
                     </Form>
@@ -279,5 +277,4 @@ const AddFilm = ({ isOpenModal, setIsOpenModal, fetchFilmList }) => {
     );
 };
 
-export default AddFilm;
-
+export default EditFilm;

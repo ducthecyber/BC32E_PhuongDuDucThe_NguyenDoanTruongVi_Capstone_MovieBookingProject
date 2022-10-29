@@ -1,5 +1,5 @@
 import React from 'react'
-import { useRoutes } from 'react-router-dom'
+import { Navigate, useRoutes } from 'react-router-dom'
 import UserMainLayout from '../components/layouts/UserMainLayout'
 import AdminMainLayout from '../components/layouts/AdminMainLayout'
 import Home from '../pages/Home/Home'
@@ -25,6 +25,10 @@ const Routers = () => {
       path: '/admin',
       element: <AdminMainLayout />,
       children: [
+        {
+          path: '',
+          element:<Navigate to='login'/>,
+        },
         {
           path: 'login',
           element:<Login/>,
