@@ -17,49 +17,59 @@ const { Search } = Input;
 const onSearch = (value) => console.log(value);
 
 const FilmManage = () => {
-    const [filmList, setFilmList] = useState([]);
+    const [phim, setPhim] = useState(false);
     const [isOpenModal, setIsOpenModal] = useState(false);
     const [isOpenModalEdit, setIsOpenModalEdit] = useState(false);
-    const [filmInfo, setFilmInfo] = useState(false);
     const dispatch = useDispatch()
-    const { movieList } = useSelector((state) => state.movieReducer)
-    const data = movieList
+    //load danh sách phim ra giao diện
+    useEffect(() => {
+        dispatch(movieActions.getMovieList())
+    }, [])
 
+    const { movieList } = useSelector((state) => state.movieReducer)
+
+    //GAN MOVIELIST TỪ STORE CHO DATA CỦA TABLE
+    const data = movieList
+    //THAY DOI STATE DE HIEN RA MODAL EDIT
+    const onEdit = () => {
+        setIsOpenModalEdit(true);
+    }
     console.log('movieList', movieList)
-    const fetchFilmList = async () => {
-        let newList = data.map((film) => {
-          return {
-            ...film,
-            action:{
-                onEdit: () => {
-                  setIsOpenModalEdit(true);
-                  setFilmInfo(film);
-                },
-            }
-            
-            //   onDelete: () => {
-            //     movieService
-            //       .deleteMovie(film.maPhim)
-            //       .then((res) => {
-            //         message.success(res.data.content);
-            //         fetchFilmList();
-            //       })
-            //       .catch((err) => {
-            //         message.error(err.response.data.content);
-            //       });
-            //   },
-            //   onCreateNewSchedule: () => {
-            //     setFilmInfor(film);
-            //     setIsOpenModalAddSchedule(true);
-            //   },
-            
-          };
-        });
-        setFilmList(newList);
-      };
-      useEffect(() => {
-        fetchFilmList();
-      }, []);
+
+    // const fetchFilmList = () => {
+    //     let newList = data.map((film) => {
+    //       return {
+    //         ...film,
+    //         action:{
+    //             onEdit: () => {
+    //               setIsOpenModalEdit(true);
+    //               setFilmInfo(film);
+    //             },
+    //         }
+
+    //         //   onDelete: () => {
+    //         //     movieService
+    //         //       .deleteMovie(film.maPhim)
+    //         //       .then((res) => {
+    //         //         message.success(res.data.content);
+    //         //         fetchFilmList();
+    //         //       })
+    //         //       .catch((err) => {
+    //         //         message.error(err.response.data.content);
+    //         //       });
+    //         //   },
+    //         //   onCreateNewSchedule: () => {
+    //         //     setFilmInfor(film);
+    //         //     setIsOpenModalAddSchedule(true);
+    //         //   },
+
+    //       };
+    //     });
+    //     setFilmList(newList);
+    //   };
+    //   useEffect(() => {
+    //     fetchFilmList();
+    //   },[]);
     const columns = [
         {
             title: "Mã phim",
@@ -81,7 +91,7 @@ const FilmManage = () => {
             title: "Trailer phim",
             dataIndex: "trailer",
             key: "trailer",
-            width: 200,
+            width: 80,
             // render: (text) => <a>{text}</a>,
         },
         {
@@ -109,7 +119,7 @@ const FilmManage = () => {
             title: "Mô tả",
             dataIndex: "moTa",
             key: "moTa",
-            width: 300,
+            width: 100,
 
             // render: (text) => <a>{text}</a>,
         },
@@ -117,14 +127,16 @@ const FilmManage = () => {
             title: "Thao tác",
             dataIndex: "action",
             key: "action",
-            render: (action) => {
+            width: 70,
+            render: (action, item) => {
                 return (
                     <>
                         <Button
                             key={1}
                             className="edit transition duration-200 border-none mr-1 "
                             onClick={() => {
-                                action.onEdit();
+                                onEdit(item);
+                                setPhim(item)
                             }}
                         >
                             <EditOutlined />
@@ -153,10 +165,6 @@ const FilmManage = () => {
         },
     ];
 
-
-    useEffect(() => {
-        dispatch(movieActions.getMovieList())
-    }, [])
     return (
         <Container className='FilmManage mr-2 ml-2 pt-2'>
             <div className="flex justify-between mb-2">
@@ -168,8 +176,8 @@ const FilmManage = () => {
                 onSearch={onSearch}
                 className='mb-5 Search'
             />
-            <div className=''>
-                <Table columns={columns} dataSource={filmList} />
+            <div className='w-full'>
+                <Table columns={columns} dataSource={data} rowKey='maPhim' />
             </div>
             {isOpenModal && (
                 <AddFilm
@@ -180,10 +188,11 @@ const FilmManage = () => {
             )}
             {isOpenModalEdit && (
                 <EditFilm
-                      fetchFilmList={fetchFilmList}
+
+                    //   fetchFilmList={fetchFilmList}
                     isOpenModalEdit={isOpenModalEdit}
                     setIsOpenModalEdit={setIsOpenModalEdit}
-                    filmInfo = {filmInfo}
+                    phim={phim}
                 />
             )}
         </Container>

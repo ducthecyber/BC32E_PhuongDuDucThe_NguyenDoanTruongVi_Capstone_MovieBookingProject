@@ -1,1 +1,0 @@
-export const EDIT_MOVIEINFO = 'EDIT_MOVIEINFO'

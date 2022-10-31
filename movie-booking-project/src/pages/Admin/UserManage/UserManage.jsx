@@ -122,7 +122,7 @@ const UserManage = () => {
         className='mb-5 Search'
       />
       <div className=''>
-      <Table columns={columns} dataSource={data} />
+      <Table columns={columns} dataSource={data} rowKey='taiKhoan'/>
       </div>
     </Container>
   )

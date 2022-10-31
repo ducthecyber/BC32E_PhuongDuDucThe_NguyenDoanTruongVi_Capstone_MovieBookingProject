@@ -116,7 +116,7 @@ const AddFilm = ({ isOpenModal, setIsOpenModal, fetchFilmList }) => {
                 title="Thêm phim mới"
                 footer={null}
                 centered
-                visible={isOpenModal}
+                open={isOpenModal}
                 onCancel={() => {
                     setIsOpenModal(false);
                 }}
@@ -179,7 +179,7 @@ const AddFilm = ({ isOpenModal, setIsOpenModal, fetchFilmList }) => {
                                 },
                             ]}
                         >
-                            <Input name='tenPhim' onChange={formik.handleChange} />
+                            <Input required name='tenPhim' onChange={formik.handleChange} />
                         </Form.Item>
                         <Form.Item
                             name={["trailer"]}
