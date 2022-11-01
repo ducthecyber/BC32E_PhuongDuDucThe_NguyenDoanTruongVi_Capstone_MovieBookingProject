@@ -1,4 +1,5 @@
 import { ADD_MOVIELIST } from "../types/movieAddType";
+import { DELETE_MOVIELIST } from "../types/movieDeleteType";
 import { GET_MOVIEINFO } from "../types/movieGetType";
 import { GET_MOVIELIST } from "../types/movieType";
 import { UPDATE_MOVIEINFO } from "../types/movieUpdateType";
@@ -31,6 +32,10 @@ export const movieReducer = (state = stateDefault, { payload, type }) => {
             const newMovieList = state.movieList.map(item => item.maPhim === payload.maPhim ? payload : item)
             state.selectedFilm = null
             return { ...state, movieList: newMovieList }
+        }
+        case DELETE_MOVIELIST: {
+            let data = state.movieList.filter((item) => item.maPhim !== payload)
+            return { ...state, movieInfo: data }
         }
         default: return state
     }

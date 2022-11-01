@@ -1,6 +1,6 @@
 import React, { Fragment, useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { Button, Space, Table, Tag, Input } from "antd";
+import { Button, Space, Table, Tag, Input, Alert } from "antd";
 import {
     DeleteOutlined,
     EditOutlined,
@@ -8,10 +8,15 @@ import {
 } from "@ant-design/icons";
 import styled from 'styled-components';
 import { AudioOutlined } from '@ant-design/icons';
+
+import { confirm } from "react-confirm-box";
 import { movieActions } from '../../../store/actions/movieAction';
 import { movieReducer } from '../../../store/reducers/movieReducer'
 import AddFilm from '../AddFilm/AddFilm';
 import EditFilm from '../EditFilm/EditFilm';
+import style from './style.scss'
+import ReactReadMoreReadLess from "react-read-more-read-less";
+
 
 const { Search } = Input;
 const onSearch = (value) => console.log(value);
@@ -34,6 +39,30 @@ const FilmManage = () => {
     const onEdit = () => {
         setIsOpenModalEdit(true);
     }
+    const onDelete = (maPhim) => {
+        console.log('maPhimXoa', maPhim)
+        dispatch(movieActions.deleteMovieInfo(maPhim))
+        dispatch(movieActions.getMovieList())
+    }
+
+    const onConfirm = {
+        closeOnOverlayClick: false,
+        labels: {
+            confirmable: "Confirm",
+            cancellable: "Cancel"
+        }
+    };
+    const onClick = async (options,maPhim) => {
+        const result = await confirm("Continue deleting this film?", options);
+        if (result) {
+            dispatch(movieActions.deleteMovieInfo(maPhim))
+            dispatch(movieActions.getMovieList())
+            console.log("Confirm Delete!");
+            return;
+        }
+        console.log("Abort Delete!");
+    };
+
     console.log('movieList', movieList)
 
     // const fetchFilmList = () => {
@@ -76,6 +105,7 @@ const FilmManage = () => {
             dataIndex: "maPhim",
             key: "maPhim",
             width: 80,
+            align: 'center',
             // value:(text,object)=>{return<span>{text}</span>}
             // render: (text) => <a>{text}</a>,
         },
@@ -91,14 +121,18 @@ const FilmManage = () => {
             title: "Trailer phim",
             dataIndex: "trailer",
             key: "trailer",
-            width: 80,
+            width: 100,
+            // ellipsis: true,
+            textWrap: 'word-break',
             // render: (text) => <a>{text}</a>,
         },
         {
             title: "Hình ảnh",
             dataIndex: "hinhAnh",
             key: "hinhAnh",
-            width: 200,
+            width: 100,
+            align: 'center',
+            ellipsis: true,
             render: (text, film) => {
                 return <Fragment>
                     <img src={film.hinhAnh} alt={film.tenPhim} width={100} height={100}
@@ -112,22 +146,39 @@ const FilmManage = () => {
             dataIndex: "ngayKhoiChieu",
             key: "ngayKhoiChieu",
             width: 150,
-
+            align: 'center'
             // render: (text) => <a>{text}</a>,
         },
         {
             title: "Mô tả",
             dataIndex: "moTa",
             key: "moTa",
-            width: 100,
+            width: 250,
+            // textWrap: 'word-break',
+            // ellipsis: true,
+            // responsive: ['md'],
+            render: (item) => {
+                return <Fragment>
+                    <ReactReadMoreReadLess
+                        readMoreStyle={{ color: 'darkcyan', fontStyle: 'italic', whiteSpace: "nowrap", cursor: "pointer" }}
+                        readLessStyle={{ color: 'darkcyan', fontStyle: 'italic', whiteSpace: "nowrap", cursor: "pointer" }}
+                        charLimit={100}
+                        readMoreText={"Read more ▼"}
+                        readLessText={"Read less ▲"}
+                    >
+                        {item}
+                    </ReactReadMoreReadLess>
 
-            // render: (text) => <a>{text}</a>,
+
+                </Fragment>
+            }
         },
         {
             title: "Thao tác",
             dataIndex: "action",
             key: "action",
             width: 70,
+            align: 'center',
             render: (action, item) => {
                 return (
                     <>
@@ -136,7 +187,7 @@ const FilmManage = () => {
                             className="edit transition duration-200 border-none mr-1 "
                             onClick={() => {
                                 onEdit(item);
-                                setPhim(item)
+                                setPhim(item);
                             }}
                         >
                             <EditOutlined />
@@ -145,7 +196,8 @@ const FilmManage = () => {
                             key={2}
                             className="delete transition duration-200 border-none mr-1"
                             onClick={() => {
-                                action.onDelete();
+                                onClick(onConfirm,item.maPhim)
+                                // onDelete(item.maPhim);
                             }}
                         >
                             <DeleteOutlined />
@@ -177,7 +229,7 @@ const FilmManage = () => {
                 className='mb-5 Search'
             />
             <div className='w-full'>
-                <Table columns={columns} dataSource={data} rowKey='maPhim' />
+                <Table columns={columns} dataSource={data} rowKey='maPhim' scroll={{ x: 500, y: 500 }} className='FilmManage' />
             </div>
             {isOpenModal && (
                 <AddFilm
