@@ -19,7 +19,8 @@ import ReactReadMoreReadLess from "react-read-more-read-less";
 
 
 const { Search } = Input;
-const onSearch = (value) => console.log(value);
+
+    
 
 const FilmManage = () => {
     const [phim, setPhim] = useState(false);
@@ -36,7 +37,9 @@ const FilmManage = () => {
     //GAN MOVIELIST TỪ STORE CHO DATA CỦA TABLE
     const data = movieList
     //THAY DOI STATE DE HIEN RA MODAL EDIT
-    const onEdit = () => {
+    const onEdit = (item) => {
+      
+        dispatch(movieActions.getMovieInfo(item.maPhim))
         setIsOpenModalEdit(true);
     }
     const onDelete = (maPhim) => {
@@ -65,6 +68,10 @@ const FilmManage = () => {
 
     console.log('movieList', movieList)
 
+    const onSearch = (value) =>{
+        dispatch(movieActions.getMovieList(value))
+        console.log(value);
+    } 
     // const fetchFilmList = () => {
     //     let newList = data.map((film) => {
     //       return {
@@ -186,6 +193,7 @@ const FilmManage = () => {
                             key={1}
                             className="edit transition duration-200 border-none mr-1 "
                             onClick={() => {
+                              
                                 onEdit(item);
                                 setPhim(item);
                             }}

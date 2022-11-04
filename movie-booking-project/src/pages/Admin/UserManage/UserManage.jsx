@@ -104,9 +104,9 @@ const columns = [
 const UserManage = () => {
   const dispatch = useDispatch()
   const {userList} = useSelector((state)=>state.userReducer)
+  const {userLogin} = useSelector((state)=>state.userReducer)
   const data = userList.items
-  console.log('userList',userList)
-
+  console.log('userinfo',userLogin)
   useEffect(() => {
     dispatch(userAction.getUserList())
   }, [])

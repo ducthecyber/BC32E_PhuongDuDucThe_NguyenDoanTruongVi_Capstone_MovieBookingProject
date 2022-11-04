@@ -9,7 +9,7 @@ import { useDispatch, useSelector } from "react-redux";
 import moment from "moment";
 import { movieActions } from "../../../store/actions/movieAction";
 import { useFormik } from "formik";
-import { history } from "../../../App";
+import {useNavigate} from 'react-router-dom';
 const { TextArea } = Input;
 
 const { Option } = Select;
@@ -31,13 +31,22 @@ const validateMessages = {
 const EditFilm = ({
     isOpenModalEdit,
     setIsOpenModalEdit,
+
     phim
 }) => {
 
-    const { movieInfo } = useSelector(state => state.movieReducer);
-    const dispatch = useDispatch()
+    const movieInfo = useSelector(state => state.movieReducer.movieInfo);
+    const userLogin = useSelector(state => state.userReducer.userLogin);
+    console.log(userLogin)
+    console.log(movieInfo)
+    // console.log('movieInfo',movieInfo);
+    const dispatch = useDispatch();
     const [imgSrc, setImgSrc] = useState('');
-
+    const [itemFilm,setItemFilm] = useState({});
+    useEffect(()=>{
+        setItemFilm(phim)
+    },[])
+    console.log(phim)
     const formik = useFormik({
         enableReinitialize: true,
         initialValues: {
@@ -55,26 +64,35 @@ const EditFilm = ({
             maNhom: 'GP01',
         },
         onSubmit: (values) => {
+          
+            console.log(values.tenPhim)
             //tạo đối tượng formData, đưa giá trị values từ formik vào formData
-            console.log('values ', values)
+            // console.log('values ', values)
             // console.log('formData', formData.get('File'))
             let formData = new FormData();
             for (let key in values) {
+              
                 if (key !== 'hinhAnh') {
                     formData.append(key, values[key]);
                 }
                 else {
-                    formData.append('File', values.hinhAnh, values.hinhAnh.name);
+                    if (values[key].size > 0) {
+                        formData.append('File', values.hinhAnh, values.hinhAnh.name);
+                    } else {
+                        formData.append(key, null);
+                    }
+
                 }
             }
+
+            // console.log('formData', formData.get('File'))
             //Gọi api gửi các giá trị từ formData về backend xử lý
             dispatch(movieActions.updateMovieInfo(formData))
-            console.log('formData', formData.get('File'))
 
             //gọi lại để render lại list film
             dispatch(movieActions.getMovieList());
             setIsOpenModalEdit(false)
-            history.push('/admin/film');
+            navigate("/admin/film");
         }
     })
     const handleChangeFile = async (e) => {
@@ -93,7 +111,7 @@ const EditFilm = ({
                 //hình type base64
                 setImgSrc(e.target.result)
             }
-            console.log('files', file)
+            // console.log('files', file)
         }
     }
 
@@ -109,7 +127,11 @@ const EditFilm = ({
             formik.setFieldValue(name, value)
         }
     }
-
+    const handleChangeDatePicker = (value)=>{
+        console.log(value)
+        // let ngayKhoiChieu = moment(value);
+        formik.setFieldValue('ngayKhoiChieu',value)
+    }
 
     const normFile = (e) => {
         if (Array.isArray(e)) {
@@ -123,6 +145,7 @@ const EditFilm = ({
         "DD/MM/YYYY"
     );
 
+    const navigate = useNavigate();
     return (
         <>
             <Modal
@@ -137,65 +160,55 @@ const EditFilm = ({
             >
                 <div>
                     <Form
-                        onSubmitCapture={formik.handleSubmit}
+                       onSubmitCapture={formik.handleSubmit}
                         {...layout}
                         name="nest-messages"
                         initialValues={{
-                            tenPhim: formik.values.tenPhim,
-                            moTa: formik.values.moTa,
-                            sapChieu: formik.values.sapChieu,
-                            dangChieu: formik.values.dangChieu,
-                            hot: formik.values.hot,
-                            ngayKhoiChieu: startDate,
-                            danhGia: formik.values.danhGia,
-                            maNhom: formik.values.maNhom,
-                            trailer: formik.values.trailer,
-                            hinhAnh: formik.values.hinhAnh,
+                            tenPhim: phim.tenPhim,
+                            moTa: phim.moTa,
+                            sapChieu: phim.sapChieu,
+                            dangChieu: phim.dangChieu,
+                            hot: phim.hot,
+                            ngayKhoiChieu: moment(phim.ngayKhoiChieu,'DD-MM-YYYY'),
+                            danhGia: phim.danhGia,
+                            maNhom: phim.maNhom,
+                            trailer: phim.trailer,
+                            hinhAnh: phim.hinhAnh,
                         }}
                         onFinish={(values) => {
-                            console.log(values);
+                            console.log(values)
                             let ngayKhoiChieu = moment(values.ngayKhoiChieu._d).format(
                                 "DD/MM/YYYY"
                             );
 
-                            // param đầu tiên trong Blob là 1 array chứa dạng dữ liệu
-                            let blob = new Blob([values.hinhAnh[0].originFileObj], {
-                                type: "image/jpg",
-                            });
+                            // // param đầu tiên trong Blob là 1 array chứa dạng dữ liệu
+                            // let blob = new Blob([values.hinhAnh[0].originFileObj], {
+                            //     type: "image/jpg",
+                            // });
 
-                            let formData = new FormData();
+                            // let formData = new FormData();
 
-                            formData.append("tenPhim", values.tenPhim);
-                            formData.append("moTa", values.moTa);
-                            formData.append("ngayKhoiChieu", ngayKhoiChieu);
-                            formData.append("sapChieu", values.sapChieu);
-                            formData.append("dangChieu", values.dangChieu);
-                            formData.append("hot", values.hot);
-                            formData.append("danhGia", values.danhGia);
-                            formData.append("maNhom", "GP01");
-                            formData.append("trailer", values.trailer);
-                            formData.append(
-                                "hinhAnh",
-                                blob,
-                                values.hinhAnh[0].originFileObj.name
-                            );
+                            // formData.append("tenPhim", values.tenPhim);
+                            // formData.append("moTa", values.moTa);
+                            // formData.append("ngayKhoiChieu", ngayKhoiChieu);
+                            // formData.append("sapChieu", values.sapChieu);
+                            // formData.append("dangChieu", values.dangChieu);
+                            // formData.append("hot", values.hot);
+                            // formData.append("danhGia", values.danhGia);
+                            // formData.append("maNhom", "GP01");
+                            // formData.append("trailer", values.trailer);
+                            // formData.append(
+                            //     "hinhAnh",
+                            //     blob,
+                            //     values.hinhAnh[0].originFileObj.name
+                            // );
 
-                            //   movieService
-                            //     .editMovie(formData)
-                            //     .then((res) => {
-                            //       message.success(res.data.content);
-                            //       // setIsOpenModalEdit(false);
-                            //       // fetchFilmList();
-                            //     })
-                            //     .catch((err) => {
-                            //       message.error(err.response.data.content);
-                            //     });
                         }}
                         validateMessages={validateMessages}
                         className="w-5/6 mt-2 max-h-max xl:h-128 flex flex-col justify-center mx-auto"
                     >
                         <Form.Item
-                            name={["tenPhim"]}
+                            name="tenPhim"
                             label="Tên phim"
                             rules={[
                                 {
@@ -203,10 +216,10 @@ const EditFilm = ({
                                 },
                             ]}
                         >
-                            <Input name='tenPhim' />
+                            <Input name='tenPhim' onChange={formik.handleChange} />
                         </Form.Item>
                         <Form.Item
-                            name={["trailer"]}
+                            name="trailer"
                             label="Trailer phim"
                             rules={[
                                 {
@@ -214,7 +227,7 @@ const EditFilm = ({
                                 },
                             ]}
                         >
-                            <Input />
+                            <Input name='trailer' onChange={formik.handleChange}/>
                         </Form.Item>
                         <Form.Item
                             name={["moTa"]}
@@ -225,7 +238,7 @@ const EditFilm = ({
                                 },
                             ]}
                         >
-                            <TextArea rows={4} />
+                            <TextArea rows={4} name='moTa' onChange={formik.handleChange} />
                         </Form.Item>
                         <Form.Item
                             name={["ngayKhoiChieu"]}
@@ -240,6 +253,9 @@ const EditFilm = ({
                                 placeholder="Chọn ngày khởi chiếu"
                                 className="w-72"
                                 format={"DD/MM/YYYY"}
+                                name='ngayKhoiChieu'
+                                onChange={handleChangeDatePicker} 
+                                
                             />
                         </Form.Item>
                         <Form.Item
@@ -283,7 +299,7 @@ const EditFilm = ({
                         >
                             <input type='file' onChange={handleChangeFile}></input>
                             <br />
-                            <img src={imgSrc === '' ? phim.hinhAnh : imgSrc} alt="..." style={{ width: 150, height: 150 }} accept="image/png, image/jpeg, image/jpg"
+                            <img onChange={handleChangeFile} src={imgSrc === '' ? phim.hinhAnh : imgSrc} alt="..." style={{ width: 150, height: 150 }} accept="image/png, image/jpeg, image/jpg"
                             />
                         </Form.Item>
                         <div className="text-center mb-8">

@@ -1,7 +1,8 @@
-import { GET_USERLIST } from "../types/userType";
-
+import { GET_USERLIST } from "../types/UserManagement/userType";
+import { USER_SIGNIN} from "../types/UserManagement/userSignInType";
 const stateDefault = {
-    userList:[]
+    userList:[],
+    userLogin:{}
 }
 
 export const userReducer = (state=stateDefault,{payload,type})=>{
@@ -11,6 +12,13 @@ export const userReducer = (state=stateDefault,{payload,type})=>{
             data = payload
             return {...state,userList:data}
         }
+        case  USER_SIGNIN:{
+            let data = {...state.userLogin}
+            data = payload
+            localStorage.setItem(USER_SIGNIN,JSON.stringify(data));
+            return {...state,userLogin:data}
+        }
+
         default: return state
     }
 }
