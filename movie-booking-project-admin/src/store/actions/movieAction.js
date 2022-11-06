@@ -50,7 +50,6 @@ export const movieActions = {
                 },
                 data: formData,
             })
-            alert('Thêm phim thành công')
             console.log('newmovie', result.data.content)
             dispatch({
                 type: ADD_MOVIELIST,
@@ -88,7 +87,7 @@ export const movieActions = {
 
                 data: formData,
             })
-            alert('Cập nhật phim thành công')
+            // alert('Cập nhật phim thành công')
             dispatch({
                 type: UPDATE_MOVIEINFO,
                 payload: result.data.content,

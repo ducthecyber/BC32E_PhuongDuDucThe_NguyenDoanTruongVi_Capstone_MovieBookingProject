@@ -11,18 +11,18 @@ import UserManage from '../pages/Admin/UserManage/UserManage'
 const Routers = () => {
   //useRoutes nhận vào 1 mảng
   const routing = useRoutes([
+    // {
+    //   path: '/',
+    //   element: <UserMainLayout />,
+    //   children: [
+    //     {
+    //       path: 'home',
+    //       element: <Home />,
+    //     }
+    //   ]
+    // },
     {
-      path: '/',
-      element: <UserMainLayout />,
-      children: [
-        {
-          path: 'home',
-          element: <Home />,
-        }
-      ]
-    },
-    {
-      path: '/admin',
+      path: '',
       element: <AdminMainLayout />,
       children: [
         {
