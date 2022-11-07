@@ -3,6 +3,7 @@ import { USER_SIGNIN} from "../types/UserManagement/userSignInType";
 import { ADD_NEWUSER } from "../types/UserManagement/userAddNewType";
 import { EDIT_USER } from "../types/UserManagement/userEditType";
 import { USER_DELETE } from "../types/UserManagement/userDeleteType";
+import {USER_REGISTER} from "../types/UserManagement/userRegisterType"
 
 const stateDefault = {
     userList:[],
@@ -41,8 +42,13 @@ export const userReducer = (state=stateDefault,{payload,type})=>{
             
             return { ...state, userInfo: data,error:payload }
         }
-
-
+        case USER_REGISTER: {
+            let data =[...state.userList]
+            let user = payload
+            data.push(user)
+            return {...state,userList:data}
+        }
+        
         default: return state
     }
 }
