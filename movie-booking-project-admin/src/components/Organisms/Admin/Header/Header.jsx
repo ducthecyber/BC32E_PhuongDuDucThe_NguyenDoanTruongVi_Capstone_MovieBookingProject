@@ -9,7 +9,7 @@ const Header = () => {
     const { userLogin } = useSelector(state => state.userReducer)
     const handleLogout = () => {
         window.localStorage.removeItem('USER_SIGNIN');
-        window.location.href = "/admin/login";
+        window.location.href = "/login";
     };
     const [login, setLogin] = useState(false)
 

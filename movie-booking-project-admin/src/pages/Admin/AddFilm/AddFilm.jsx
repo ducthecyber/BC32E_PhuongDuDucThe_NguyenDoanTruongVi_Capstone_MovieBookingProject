@@ -61,6 +61,7 @@ const AddFilm = ({ isOpenModal, setIsOpenModal, fetchFilmList }) => {
             dispatch(movieActions.addMovieList(formData))
             //đóng modal khi thêm nhấn nút thêm phim
             setIsOpenModal(false)
+            message.success("Thêm thành công");
         }
     })
     //function truyen gia tri ngay khoi chieu vào formik

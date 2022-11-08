@@ -20,17 +20,20 @@ import ReactReadMoreReadLess from "react-read-more-read-less";
 
 const { Search } = Input;
 
-    
+
 
 const FilmManage = () => {
     const [phim, setPhim] = useState(false);
     const [isOpenModal, setIsOpenModal] = useState(false);
     const [isOpenModalEdit, setIsOpenModalEdit] = useState(false);
+    const [searchInput, setSearchInput] = useState("");
+    const [update, setUpdate] = useState({});
     const dispatch = useDispatch()
     //load danh sách phim ra giao diện
     useEffect(() => {
         dispatch(movieActions.getMovieList())
-    }, [])
+
+    }, [update])
 
     const { movieList } = useSelector((state) => state.movieReducer)
 
@@ -38,7 +41,7 @@ const FilmManage = () => {
     const data = movieList
     //THAY DOI STATE DE HIEN RA MODAL EDIT
     const onEdit = (item) => {
-      
+
         dispatch(movieActions.getMovieInfo(item.maPhim))
         setIsOpenModalEdit(true);
     }
@@ -55,7 +58,7 @@ const FilmManage = () => {
             cancellable: "Cancel"
         }
     };
-    const onClick = async (options,maPhim) => {
+    const onClick = async (options, maPhim) => {
         const result = await confirm("Continue deleting this film?", options);
         if (result) {
             dispatch(movieActions.deleteMovieInfo(maPhim))
@@ -66,46 +69,21 @@ const FilmManage = () => {
         console.log("Abort Delete!");
     };
 
-    console.log('movieList', movieList)
+    // console.log('movieList', movieList)
 
-    const onSearch = (value) =>{
+    const onSearch = (value) => {
         dispatch(movieActions.getMovieList(value))
         console.log(value);
-    } 
-    // const fetchFilmList = () => {
-    //     let newList = data.map((film) => {
-    //       return {
-    //         ...film,
-    //         action:{
-    //             onEdit: () => {
-    //               setIsOpenModalEdit(true);
-    //               setFilmInfo(film);
-    //             },
-    //         }
+    }
 
-    //         //   onDelete: () => {
-    //         //     movieService
-    //         //       .deleteMovie(film.maPhim)
-    //         //       .then((res) => {
-    //         //         message.success(res.data.content);
-    //         //         fetchFilmList();
-    //         //       })
-    //         //       .catch((err) => {
-    //         //         message.error(err.response.data.content);
-    //         //       });
-    //         //   },
-    //         //   onCreateNewSchedule: () => {
-    //         //     setFilmInfor(film);
-    //         //     setIsOpenModalAddSchedule(true);
-    //         //   },
+    const handleInputChange = (e) => {
+        if (e.target.value != "") {
+            setSearchInput(e.target.value);
+        } else if (e.target.value == "") {
+            setUpdate(Math.random());
+        }
+    };
 
-    //       };
-    //     });
-    //     setFilmList(newList);
-    //   };
-    //   useEffect(() => {
-    //     fetchFilmList();
-    //   },[]);
     const columns = [
         {
             title: "Mã phim",
@@ -193,7 +171,7 @@ const FilmManage = () => {
                             key={1}
                             className="edit transition duration-200 border-none mr-1 "
                             onClick={() => {
-                              
+
                                 onEdit(item);
                                 setPhim(item);
                             }}
@@ -204,7 +182,7 @@ const FilmManage = () => {
                             key={2}
                             className="delete transition duration-200 border-none mr-1"
                             onClick={() => {
-                                onClick(onConfirm,item.maPhim)
+                                onClick(onConfirm, item.maPhim)
                                 // onDelete(item.maPhim);
                             }}
                         >
@@ -235,6 +213,9 @@ const FilmManage = () => {
                 placeholder="Ten phim ban muon xem la gi? "
                 onSearch={onSearch}
                 className='mb-5 Search'
+                onChange={(e) => {
+                    handleInputChange(e);
+                }}
             />
             <div className='w-full'>
                 <Table columns={columns} dataSource={data} rowKey='maPhim' scroll={{ x: 500, y: 500 }} className='FilmManage' />
