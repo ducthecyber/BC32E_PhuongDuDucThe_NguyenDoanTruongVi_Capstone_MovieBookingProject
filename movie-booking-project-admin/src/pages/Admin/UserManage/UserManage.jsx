@@ -34,6 +34,9 @@ const UserManage = () => {
   const [update, setUpdate] = useState({});
   const [searchInput, setSearchInput] = useState("");
   const { error } = useSelector((state) => state.userReducer)
+  const [login, setLogin] = useState(false)
+
+  const userStatus = JSON.parse(window.localStorage.getItem('USER_SIGNIN'));
 
   const columns = [
     {
@@ -155,9 +158,22 @@ const UserManage = () => {
     console.log('userlist', data)
   }, [update])
 
+  //xét điều kiện login
+  useEffect(() => {
+    //nếu userStatus có tồn tại (khác null) thì mới set lại login
+    if (userStatus !== null) {
+      setLogin(true)
+    }
+  }, [userStatus])
+
   console.log('userList', data)
   const handleAddNewAccount = () => {
-    setIsOpenModal(true);
+    if (login !== true) {
+      message.warning('You need to login to use this function')
+    }
+    else {
+      setIsOpenModal(true);
+    }
   };
 
   const onSearch = (value) => {
@@ -174,11 +190,17 @@ const UserManage = () => {
   };
 
   const onEdit = () => {
-    setOpenModalModify(true);
+    if (login !== true) {
+      message.warning('You need to login to use this function')
+    }
+    else {
+      setOpenModalModify(true);
+    }
     // setEditUserInfo(userInfor);
   }
 
   const onDelete = (item) => {
+
     let result = confirm("Want to delete?");
     if (result) {
       console.log('delete this item')
@@ -186,40 +208,46 @@ const UserManage = () => {
   }
 
   const confirm = async (item) => {
+    if (login !== true) {
+      message.warning('You need to login to use this function')
+    }
+    else {
 
-    // dispatch(userAction.deleteUser(item.taiKhoan))
-    try {
-      const result = await axios({
-        url: `https://movienew.cybersoft.edu.vn/api/QuanLyNguoiDung/XoaNguoiDung?TaiKhoan=${item.taiKhoan}`,
-        method: 'DELETE',
-        headers: {
-          "TokenCyberSoft": 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0ZW5Mb3AiOiJCb290Y2FtcCAzMkUiLCJIZXRIYW5TdHJpbmciOiIyMC8wMy8yMDIzIiwiSGV0SGFuVGltZSI6IjE2NzkyNzA0MDAwMDAiLCJuYmYiOjE2NTA0NzQwMDAsImV4cCI6MTY3OTQxODAwMH0.S7l5kogAVJjRW8mjJ5gosJraYq5ahYjrBwnMJAaGxlY',
+      try {
+        const result = await axios({
+          url: `https://movienew.cybersoft.edu.vn/api/QuanLyNguoiDung/XoaNguoiDung?TaiKhoan=${item.taiKhoan}`,
+          method: 'DELETE',
+          headers: {
+            "TokenCyberSoft": 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0ZW5Mb3AiOiJCb290Y2FtcCAzMkUiLCJIZXRIYW5TdHJpbmciOiIyMC8wMy8yMDIzIiwiSGV0SGFuVGltZSI6IjE2NzkyNzA0MDAwMDAiLCJuYmYiOjE2NTA0NzQwMDAsImV4cCI6MTY3OTQxODAwMH0.S7l5kogAVJjRW8mjJ5gosJraYq5ahYjrBwnMJAaGxlY',
 
-          "Authorization": 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoidXNlclRlc3QwMSIsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL2VtYWlsYWRkcmVzcyI6InVzZXJUZXN0MDFAZ21haWwuY29tIiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjpbIlF1YW5UcmkiLCJ1c2VyVGVzdDAxQGdtYWlsLmNvbSIsIkdQMDEiXSwibmJmIjoxNjY3MjQ0NDc1LCJleHAiOjE2NjcyNDgwNzV9.fkMN7S09HVQPjfNPITN3pTUWus8N21juyAzzTU-93vI',
-        },
-      })
-      if (result.data.statusCode === 200) {
-        console.log('result', result)
+            "Authorization": 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoidXNlclRlc3QwMSIsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL2VtYWlsYWRkcmVzcyI6InVzZXJUZXN0MDFAZ21haWwuY29tIiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjpbIlF1YW5UcmkiLCJ1c2VyVGVzdDAxQGdtYWlsLmNvbSIsIkdQMDEiXSwibmJmIjoxNjY3MjQ0NDc1LCJleHAiOjE2NjcyNDgwNzV9.fkMN7S09HVQPjfNPITN3pTUWus8N21juyAzzTU-93vI',
+          },
+        })
+        if (result.data.statusCode === 200) {
+          console.log('result', result)
+          dispatch({
+            type: USER_DELETE,
+            payload: result.data.content,
+          })
+          message.success('Xoá người dùng thành công !');
+        }
+      }
+      catch (error) {
+        console.log(error.response.data)
         dispatch({
           type: USER_DELETE,
-          payload: result.data.content,
+          payload: `Tài khoản không xoá được vì đã đặt vé !`,
         })
-        message.success('Xoá người dùng thành công !');
+        message.error("Không thể xoá người dùng vì đã đặt vé")
       }
+
     }
-    catch (error) {
-      console.log(error.response.data)
-      dispatch({
-        type: USER_DELETE,
-        payload: `Tài khoản không xoá được vì đã đặt vé !`,
-      })
-      message.error("Không thể xoá người dùng vì đã đặt vé")
-    }
-    
+    // dispatch(userAction.deleteUser(item.taiKhoan))
+
   };
 
   const cancel = (e) => {
-  
+
   };
 
   const onConfirm = {

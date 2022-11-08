@@ -9,7 +9,9 @@ import { useDispatch, useSelector } from "react-redux";
 import moment from "moment";
 import { movieActions } from "../../../store/actions/movieAction";
 import { useFormik } from "formik";
-import {useNavigate} from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import axios from "axios"
+
 const { TextArea } = Input;
 
 const { Option } = Select;
@@ -31,7 +33,7 @@ const validateMessages = {
 const EditFilm = ({
     isOpenModalEdit,
     setIsOpenModalEdit,
-
+    setUpdate,
     phim
 }) => {
 
@@ -42,10 +44,10 @@ const EditFilm = ({
     // console.log('movieInfo',movieInfo);
     const dispatch = useDispatch();
     const [imgSrc, setImgSrc] = useState('');
-    const [itemFilm,setItemFilm] = useState({});
-    useEffect(()=>{
+    const [itemFilm, setItemFilm] = useState({});
+    useEffect(() => {
         setItemFilm(phim)
-    },[])
+    }, [])
     console.log(phim)
     const formik = useFormik({
         enableReinitialize: true,
@@ -63,15 +65,15 @@ const EditFilm = ({
             hinhAnh: phim.hinhAnh,
             maNhom: 'GP01',
         },
-        onSubmit: (values) => {
-          
+        onSubmit: async (values) => {
+
             console.log(values.tenPhim)
             //tạo đối tượng formData, đưa giá trị values từ formik vào formData
             // console.log('values ', values)
             // console.log('formData', formData.get('File'))
             let formData = new FormData();
             for (let key in values) {
-              
+
                 if (key !== 'hinhAnh') {
                     formData.append(key, values[key]);
                 }
@@ -84,15 +86,36 @@ const EditFilm = ({
 
                 }
             }
-
             // console.log('formData', formData.get('File'))
             //Gọi api gửi các giá trị từ formData về backend xử lý
             dispatch(movieActions.updateMovieInfo(formData))
+            try {
 
+                dispatch(movieActions.getMovieList());
+                const result = await axios({
+                    url: (`https://movienew.cybersoft.edu.vn/api/QuanLyPhim/CapNhatPhimUpload`),
+                    method: 'POST',
+                    headers: {
+                        "TokenCyberSoft": 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0ZW5Mb3AiOiJCb290Y2FtcCAzMkUiLCJIZXRIYW5TdHJpbmciOiIyMC8wMy8yMDIzIiwiSGV0SGFuVGltZSI6IjE2NzkyNzA0MDAwMDAiLCJuYmYiOjE2NTA0NzQwMDAsImV4cCI6MTY3OTQxODAwMH0.S7l5kogAVJjRW8mjJ5gosJraYq5ahYjrBwnMJAaGxlY',
+
+                        "Authorization": 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoidXNlclRlc3QwMSIsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL2VtYWlsYWRkcmVzcyI6InVzZXJUZXN0MDFAZ21haWwuY29tIiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjpbIlF1YW5UcmkiLCJ1c2VyVGVzdDAxQGdtYWlsLmNvbSIsIkdQMDEiXSwibmJmIjoxNjY3MjQ0NDc1LCJleHAiOjE2NjcyNDgwNzV9.fkMN7S09HVQPjfNPITN3pTUWus8N21juyAzzTU-93vI',
+
+                        "Content-Type": "multipart/form-data"
+                    },
+
+                    data: formData,
+                })
+
+                setIsOpenModalEdit(false)
+                setUpdate(Math.random());
+                navigate("/film");
+                message.success('Chỉnh sửa thành công')
+
+            } catch (error) {
+                message.error(`Chỉnh sửa không thành công vì ${error.response.data.content}`);
+                setIsOpenModalEdit(true);
+            }
             //gọi lại để render lại list film
-            dispatch(movieActions.getMovieList());
-            setIsOpenModalEdit(false)
-            navigate("/admin/film");
         }
     })
     const handleChangeFile = async (e) => {
@@ -127,10 +150,10 @@ const EditFilm = ({
             formik.setFieldValue(name, value)
         }
     }
-    const handleChangeDatePicker = (value)=>{
+    const handleChangeDatePicker = (value) => {
         console.log(value)
         // let ngayKhoiChieu = moment(value);
-        formik.setFieldValue('ngayKhoiChieu',value)
+        formik.setFieldValue('ngayKhoiChieu', value)
     }
 
     const normFile = (e) => {
@@ -160,7 +183,7 @@ const EditFilm = ({
             >
                 <div>
                     <Form
-                       onSubmitCapture={formik.handleSubmit}
+                        onSubmitCapture={formik.handleSubmit}
                         {...layout}
                         name="nest-messages"
                         initialValues={{
@@ -169,7 +192,7 @@ const EditFilm = ({
                             sapChieu: phim.sapChieu,
                             dangChieu: phim.dangChieu,
                             hot: phim.hot,
-                            ngayKhoiChieu: moment(phim.ngayKhoiChieu,'DD-MM-YYYY'),
+                            ngayKhoiChieu: moment(phim.ngayKhoiChieu, 'DD-MM-YYYY'),
                             danhGia: phim.danhGia,
                             maNhom: phim.maNhom,
                             trailer: phim.trailer,
@@ -227,7 +250,7 @@ const EditFilm = ({
                                 },
                             ]}
                         >
-                            <Input name='trailer' onChange={formik.handleChange}/>
+                            <Input name='trailer' onChange={formik.handleChange} />
                         </Form.Item>
                         <Form.Item
                             name={["moTa"]}
@@ -254,8 +277,8 @@ const EditFilm = ({
                                 className="w-72"
                                 format={"DD/MM/YYYY"}
                                 name='ngayKhoiChieu'
-                                onChange={handleChangeDatePicker} 
-                                
+                                onChange={handleChangeDatePicker}
+
                             />
                         </Form.Item>
                         <Form.Item
