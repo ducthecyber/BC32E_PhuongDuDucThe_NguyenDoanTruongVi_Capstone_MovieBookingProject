@@ -50,11 +50,12 @@ export const movieActions = {
                 },
                 data: formData,
             })
-            console.log('newmovie', result.data.content)
-            dispatch({
-                type: ADD_MOVIELIST,
-                payload: result.data.content,
-            })
+            if (result.data.statusCode === 200) {
+                dispatch({
+                    type: ADD_MOVIELIST,
+                    payload: result.data.content,
+                })
+            }
         }
     },
     getMovieInfo: (maPhim) => {
@@ -88,30 +89,41 @@ export const movieActions = {
                 data: formData,
             })
             // alert('Cập nhật phim thành công')
-            dispatch({
-                type: UPDATE_MOVIEINFO,
-                payload: result.data.content,
-            })
+            if (result.data.statusCode === 200) {
+                dispatch({
+                    type: UPDATE_MOVIEINFO,
+                    payload: result.data.content,
+                })
+            }
         }
     },
     deleteMovieInfo: (maPhim) => {
         return async (dispatch) => {
-            const result = await axios({
-                url: (`https://movienew.cybersoft.edu.vn/api/QuanLyPhim/XP?MaPhim=${maPhim}`),
-                method: 'DELETE',
-                headers: {
-                    "TokenCyberSoft": 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0ZW5Mb3AiOiJCb290Y2FtcCAzMkUiLCJIZXRIYW5TdHJpbmciOiIyMC8wMy8yMDIzIiwiSGV0SGFuVGltZSI6IjE2NzkyNzA0MDAwMDAiLCJuYmYiOjE2NTA0NzQwMDAsImV4cCI6MTY3OTQxODAwMH0.S7l5kogAVJjRW8mjJ5gosJraYq5ahYjrBwnMJAaGxlY',
+            try {
+                const result = await axios({
+                    url: (`https://movienew.cybersoft.edu.vn/api/QuanLyPhim/XP?MaPhim=${maPhim}`),
+                    method: 'DELETE',
+                    headers: {
+                        "TokenCyberSoft": 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0ZW5Mb3AiOiJCb290Y2FtcCAzMkUiLCJIZXRIYW5TdHJpbmciOiIyMC8wMy8yMDIzIiwiSGV0SGFuVGltZSI6IjE2NzkyNzA0MDAwMDAiLCJuYmYiOjE2NTA0NzQwMDAsImV4cCI6MTY3OTQxODAwMH0.S7l5kogAVJjRW8mjJ5gosJraYq5ahYjrBwnMJAaGxlY',
 
-                    "Authorization": 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoidXNlclRlc3QwMSIsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL2VtYWlsYWRkcmVzcyI6InVzZXJUZXN0MDFAZ21haWwuY29tIiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjpbIlF1YW5UcmkiLCJ1c2VyVGVzdDAxQGdtYWlsLmNvbSIsIkdQMDEiXSwibmJmIjoxNjY3MjQ0NDc1LCJleHAiOjE2NjcyNDgwNzV9.fkMN7S09HVQPjfNPITN3pTUWus8N21juyAzzTU-93vI',
+                        "Authorization": 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoidXNlclRlc3QwMSIsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL2VtYWlsYWRkcmVzcyI6InVzZXJUZXN0MDFAZ21haWwuY29tIiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjpbIlF1YW5UcmkiLCJ1c2VyVGVzdDAxQGdtYWlsLmNvbSIsIkdQMDEiXSwibmJmIjoxNjY3MjQ0NDc1LCJleHAiOjE2NjcyNDgwNzV9.fkMN7S09HVQPjfNPITN3pTUWus8N21juyAzzTU-93vI',
 
-                },
+                    },
 
-            })
-            alert('Xoá phim thành công')
-            dispatch({
-                type: DELETE_MOVIELIST,
-                payload: result.data.content,
-            })
+                })
+                if (result.data.statusCode === 200) {
+                    dispatch({
+                        type: DELETE_MOVIELIST,
+                        payload: result.data.content,
+                    })
+                    console.log(result.data)
+                }
+            } catch (error) {
+                dispatch({
+                    type: DELETE_MOVIELIST,
+                    payload: error.response.data.content,
+                })
+            }
         }
     },
 }

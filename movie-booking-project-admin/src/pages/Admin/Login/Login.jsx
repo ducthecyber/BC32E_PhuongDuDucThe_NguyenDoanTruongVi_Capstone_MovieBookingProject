@@ -35,6 +35,7 @@ const Login = () => {
           payload: result.data.content,
         })
         navigate("/user");
+        message.success('Đăng nhập thành công')
       }
     }
     catch (error) {

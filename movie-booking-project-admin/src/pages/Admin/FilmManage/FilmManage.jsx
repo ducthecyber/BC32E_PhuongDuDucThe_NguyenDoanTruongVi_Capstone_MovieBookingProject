@@ -1,6 +1,6 @@
 import React, { Fragment, useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { Button, Space, Table, Tag, Input, Alert } from "antd";
+import { Button, Space, Table, Tag, Input, Alert, message } from "antd";
 import {
     DeleteOutlined,
     EditOutlined,
@@ -16,6 +16,7 @@ import AddFilm from '../AddFilm/AddFilm';
 import EditFilm from '../EditFilm/EditFilm';
 import style from './style.scss'
 import ReactReadMoreReadLess from "react-read-more-read-less";
+import axios from 'axios';
 
 
 const { Search } = Input;
@@ -28,27 +29,38 @@ const FilmManage = () => {
     const [isOpenModalEdit, setIsOpenModalEdit] = useState(false);
     const [searchInput, setSearchInput] = useState("");
     const [update, setUpdate] = useState({});
+    const [login, setLogin] = useState(false)
+
+    const userStatus = JSON.parse(window.localStorage.getItem('USER_SIGNIN'));
+    console.log('login film manage')
+
+
+    useEffect(() => {
+        //nếu userStatus có tồn tại (khác null) thì mới set lại login
+        if (userStatus !== null) {
+            setLogin(true)
+        }
+    }, [userStatus])
+    
     const dispatch = useDispatch()
     //load danh sách phim ra giao diện
     useEffect(() => {
         dispatch(movieActions.getMovieList())
-
     }, [update])
 
-    const { movieList } = useSelector((state) => state.movieReducer)
-
+    const { movieList, error } = useSelector((state) => state.movieReducer)
     //GAN MOVIELIST TỪ STORE CHO DATA CỦA TABLE
     const data = movieList
     //THAY DOI STATE DE HIEN RA MODAL EDIT
     const onEdit = (item) => {
-
-        dispatch(movieActions.getMovieInfo(item.maPhim))
-        setIsOpenModalEdit(true);
-    }
-    const onDelete = (maPhim) => {
-        console.log('maPhimXoa', maPhim)
-        dispatch(movieActions.deleteMovieInfo(maPhim))
-        dispatch(movieActions.getMovieList())
+        if(login !==true){
+            message.warning('You need to login to use this function')
+            
+        }
+        else{
+            dispatch(movieActions.getMovieInfo(item.maPhim))
+            setIsOpenModalEdit(true);
+        }
     }
 
     const onConfirm = {
@@ -59,17 +71,34 @@ const FilmManage = () => {
         }
     };
     const onClick = async (options, maPhim) => {
-        const result = await confirm("Continue deleting this film?", options);
-        if (result) {
-            dispatch(movieActions.deleteMovieInfo(maPhim))
-            dispatch(movieActions.getMovieList())
-            console.log("Confirm Delete!");
-            return;
+        if(login !==true){
+            message.warning('You need to login to use this function')
         }
-        console.log("Abort Delete!");
-    };
-
-    // console.log('movieList', movieList)
+        else{
+            const result = await confirm("Continue deleting this film?", options);
+            if (result) {
+                dispatch(movieActions.deleteMovieInfo(maPhim))
+                try {
+                    const response = await axios({
+                        url: (`https://movienew.cybersoft.edu.vn/api/QuanLyPhim/XP?MaPhim=${maPhim}`),
+                        method: 'DELETE',
+                        headers: {
+                            "TokenCyberSoft": 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0ZW5Mb3AiOiJCb290Y2FtcCAzMkUiLCJIZXRIYW5TdHJpbmciOiIyMC8wMy8yMDIzIiwiSGV0SGFuVGltZSI6IjE2NzkyNzA0MDAwMDAiLCJuYmYiOjE2NTA0NzQwMDAsImV4cCI6MTY3OTQxODAwMH0.S7l5kogAVJjRW8mjJ5gosJraYq5ahYjrBwnMJAaGxlY',
+    
+                            "Authorization": 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoidXNlclRlc3QwMSIsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL2VtYWlsYWRkcmVzcyI6InVzZXJUZXN0MDFAZ21haWwuY29tIiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjpbIlF1YW5UcmkiLCJ1c2VyVGVzdDAxQGdtYWlsLmNvbSIsIkdQMDEiXSwibmJmIjoxNjY3MjQ0NDc1LCJleHAiOjE2NjcyNDgwNzV9.fkMN7S09HVQPjfNPITN3pTUWus8N21juyAzzTU-93vI',
+    
+                        },
+    
+                    })
+                    message.success('Xoá phim thành công !')
+                    setUpdate(Math.random());
+                    dispatch(movieActions.getMovieList())
+                } catch (error) {
+                    message.error(`${error.response.data.content}`)
+                }
+            };
+        }
+    }
 
     const onSearch = (value) => {
         dispatch(movieActions.getMovieList(value))
@@ -84,6 +113,7 @@ const FilmManage = () => {
         }
     };
 
+    
     const columns = [
         {
             title: "Mã phim",
@@ -168,10 +198,10 @@ const FilmManage = () => {
                 return (
                     <>
                         <Button
+                            
                             key={1}
                             className="edit transition duration-200 border-none mr-1 "
                             onClick={() => {
-
                                 onEdit(item);
                                 setPhim(item);
                             }}
@@ -222,6 +252,7 @@ const FilmManage = () => {
             </div>
             {isOpenModal && (
                 <AddFilm
+                    error={error}
                     //   fetchFilmList={fetchFilmList}
                     isOpenModal={isOpenModal}
                     setIsOpenModal={setIsOpenModal}
@@ -229,7 +260,9 @@ const FilmManage = () => {
             )}
             {isOpenModalEdit && (
                 <EditFilm
-
+                    error={error}
+                    update={update}
+                    setUpdate={setUpdate}
                     //   fetchFilmList={fetchFilmList}
                     isOpenModalEdit={isOpenModalEdit}
                     setIsOpenModalEdit={setIsOpenModalEdit}

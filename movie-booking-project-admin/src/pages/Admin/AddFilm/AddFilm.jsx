@@ -8,6 +8,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useFormik } from 'formik'
 // import { movieService } from "../../Services/movieService";
 import moment from "moment";
+import axios from "axios"
 import { movieActions } from "../../../store/actions/movieAction";
 const { TextArea } = Input;
 
@@ -27,9 +28,11 @@ const validateMessages = {
     required: "Bắt buộc",
 };
 
-const AddFilm = ({ isOpenModal, setIsOpenModal, fetchFilmList }) => {
+const AddFilm = ({ isOpenModal, setIsOpenModal, fetchFilmList, error }) => {
     const dispatch = useDispatch();
     const [imgSrc, setImgSrc] = useState('');
+    // const {error} = useSelector((state)=>state.movieReducer)
+    console.log('error add film', error)
     const formik = useFormik({
         initialValues: {
             tenPhim: '',
@@ -42,7 +45,7 @@ const AddFilm = ({ isOpenModal, setIsOpenModal, fetchFilmList }) => {
             danhGia: 1,
             hinhAnh: {},
         },
-        onSubmit: (values) => {
+        onSubmit: async (values) => {
             // values.maNhom = 'GP10'
             //tạo đối tượng formData, đưa giá trị values từ formik vào formData
             let formData = new FormData();
@@ -50,18 +53,35 @@ const AddFilm = ({ isOpenModal, setIsOpenModal, fetchFilmList }) => {
                 if (key !== 'hinhAnh') {
                     formData.append(key, values[key]);
                 }
-                else{
-                    formData.append('File',values.hinhAnh,values.hinhAnh.name);
+                else {
+                    formData.append('File', values.hinhAnh, values.hinhAnh.name);
                 }
             }
-            
+
             console.log('hinhAnh', values.hinhAnh)
-            console.log('formData',formData.get('File'))
+            console.log('formData', formData.get('File'))
             //Gọi api gửi các giá trị từ formData về backend xử lý
-            dispatch(movieActions.addMovieList(formData))
-            //đóng modal khi thêm nhấn nút thêm phim
-            setIsOpenModal(false)
-            message.success("Thêm thành công");
+            try {
+                dispatch(movieActions.addMovieList(formData))
+                const response = await axios({
+                    url: (`https://movienew.cybersoft.edu.vn/api/QuanLyPhim/ThemPhimUploadHinh`),
+                    method: 'POST',
+                    headers: {
+                        "TokenCyberSoft": 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0ZW5Mb3AiOiJCb290Y2FtcCAzMkUiLCJIZXRIYW5TdHJpbmciOiIyMC8wMy8yMDIzIiwiSGV0SGFuVGltZSI6IjE2NzkyNzA0MDAwMDAiLCJuYmYiOjE2NTA0NzQwMDAsImV4cCI6MTY3OTQxODAwMH0.S7l5kogAVJjRW8mjJ5gosJraYq5ahYjrBwnMJAaGxlY',
+                        "Content-Type": "multipart/form-data"
+
+                    },
+                    data: formData,
+                })
+                console.log(response.data.statusCode)
+                message.success("Thêm thành công");
+                setIsOpenModal(false)
+            } catch (error) {
+                console.log('eror add', error.response.data.content)
+                message.error(`Thêm phim không thành công vì ${error.response.data.content}`);
+                setIsOpenModal(true);
+            }
+
         }
     })
     //function truyen gia tri ngay khoi chieu vào formik

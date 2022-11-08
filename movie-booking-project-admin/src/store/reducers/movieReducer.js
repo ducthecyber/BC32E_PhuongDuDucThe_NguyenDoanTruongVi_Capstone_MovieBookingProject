@@ -8,6 +8,7 @@ const stateDefault = {
     movieList: [],
     movieInfo: {},
     selectedFilm: null,
+    error:'',
 }
 
 export const movieReducer = (state = stateDefault, { payload, type }) => {
@@ -21,7 +22,7 @@ export const movieReducer = (state = stateDefault, { payload, type }) => {
             let data = [...state.movieList]
             let film = payload
             data.push(film)
-            return { ...state, movieList: data }
+            return { ...state, movieList: data,error:payload }
         }
         case GET_MOVIEINFO: {
             let data = { ...state.movieInfo }
@@ -35,7 +36,7 @@ export const movieReducer = (state = stateDefault, { payload, type }) => {
         }
         case DELETE_MOVIELIST: {
             let data = state.movieList.filter((item) => item.maPhim !== payload)
-            return { ...state, movieInfo: data }
+            return { ...state, movieInfo: data,error:payload }
         }
         default: return state
     }
