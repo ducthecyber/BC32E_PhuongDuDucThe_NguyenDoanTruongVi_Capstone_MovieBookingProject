@@ -5,7 +5,7 @@ import { hideSpinner, showSpinner } from "../Redux/Action/action";
 
 export const BASE_URL = "https://movienew.cybersoft.edu.vn";
 export const CYBERSOFT_TOKEN =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0ZW5Mb3AiOiJCb290Y2FtcCBTw6FuZyAwMyIsIkhldEhhblN0cmluZyI6IjAxLzAxLzIwMjMiLCJIZXRIYW5UaW1lIjoiMTY3MjUzMTIwMDAwMCIsIm5iZiI6MTY0NzUzNjQwMCwiZXhwIjoxNjcyNjc4ODAwfQ.v1pky9yKwnujpoxePbaS26rxq_cGpKrk0GvA0sHAVqY";
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0ZW5Mb3AiOiJOb2RlanMgMjUiLCJIZXRIYW5TdHJpbmciOiIxNS8wNS8yMDIzIiwiSGV0SGFuVGltZSI6IjE2ODQxMDg4MDAwMDAiLCJuYmYiOjE2NjY3MTcyMDAsImV4cCI6MTY4NDI1NjQwMH0.vdVVhPEIB7ZV9oEaVDyxq430wfBgJgeYqiM5JTcdwqo";
 
 // Create axios Instance
 export const Services = axios.create({
