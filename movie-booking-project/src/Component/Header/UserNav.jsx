@@ -1,4 +1,4 @@
-import type { MenuProps } from "antd";
+import  { MenuProps } from "antd";
 import { Dropdown, Menu, message, Space, Button } from "antd";
 import React from "react";
 import { NavLink } from "react-router-dom";
